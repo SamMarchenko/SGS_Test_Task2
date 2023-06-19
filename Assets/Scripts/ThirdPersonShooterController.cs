@@ -10,25 +10,27 @@ public class ThirdPersonShooterController : MonoBehaviour
     [SerializeField] private float _normalSensitivity;
     [SerializeField] private float _aimSensitivity;
     [SerializeField] private LayerMask _aimColliderLayerMask = new LayerMask();
-    [SerializeField] private Transform test;
     [SerializeField] private Animator _animator;
     [SerializeField] private UIControllerView _uiControllerView;
+    [SerializeField] private Transform _projectilePrefab;
+    [SerializeField] private Transform _projectileSpawnPos;
+    [SerializeField] private Transform _vfxHit;
+    private Vector3 _screenCenterPoint;
+    private Vector3 _mouseWorldPosition;
+    private bool _rotated;
 
     private void Start()
     {
+        _screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
         _uiControllerView.ShootButton.onClick.AddListener(Shoot);
     }
 
     private void Update()
     {
-        Vector3 mouseWorldPosition = Vector3.zero;
-        Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
-
-        Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
+        Ray ray = Camera.main.ScreenPointToRay(_screenCenterPoint);
         if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, _aimColliderLayerMask))
         {
-            test.position = raycastHit.point;
-            mouseWorldPosition = raycastHit.point;
+            _mouseWorldPosition = raycastHit.point;
         }
 
         if (_starterAssetsInputs.aim)
@@ -38,7 +40,7 @@ public class ThirdPersonShooterController : MonoBehaviour
             _thirdPersonController.SetRotateOnMove(false);
             _animator.SetLayerWeight(1, Mathf.Lerp(_animator.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
 
-            Vector3 worldAimTarget = mouseWorldPosition;
+            Vector3 worldAimTarget = _mouseWorldPosition;
             worldAimTarget.y = transform.position.y;
             Vector3 aimDirection = (worldAimTarget - transform.position).normalized;
 
@@ -51,11 +53,19 @@ public class ThirdPersonShooterController : MonoBehaviour
             _thirdPersonController.SetRotateOnMove(true);
             _animator.SetLayerWeight(1, Mathf.Lerp(_animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
         }
-
+#if UNITY_EDITOR
+        if (_starterAssetsInputs.shoot)
+        {
+            Shoot();
+        }
+#endif
     }
+    
 
     private void Shoot()
     {
-        
+        Vector3 aimDir = (_mouseWorldPosition - _projectileSpawnPos.position).normalized;
+        Instantiate(_projectilePrefab, _projectileSpawnPos.position, Quaternion.LookRotation(aimDir, Vector3.up));
+        _starterAssetsInputs.shoot = false;
     }
 }

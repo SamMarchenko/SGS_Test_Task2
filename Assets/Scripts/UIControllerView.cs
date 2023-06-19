@@ -15,9 +15,12 @@ public class UIControllerView : MonoBehaviour
 
     private void Update()
     {
+#if !UNITY_EDITOR
         _jumpButton.gameObject.SetActive(!_aimToogle.isOn);
         _sprintButton.gameObject.SetActive(!_aimToogle.isOn);
         _canvasController.VirtualAimInput(_aimToogle.isOn);
         _shootButton.gameObject.SetActive(_aimToogle.isOn);
+#endif
+       
     }
 }
