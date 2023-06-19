@@ -22,6 +22,11 @@ namespace StarterAssets
         {
             starterAssetsInputs.JumpInput(virtualJumpState);
         }
+        
+        public void VirtualShootInput(bool virtualShootState)
+        {
+            starterAssetsInputs.ShootInput(virtualShootState);
+        }
 
         public void VirtualSprintInput(bool virtualSprintState)
         {

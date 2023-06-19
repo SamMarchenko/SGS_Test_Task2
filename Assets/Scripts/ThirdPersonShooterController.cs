@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Cinemachine;
 using StarterAssets;
 using UnityEngine;
@@ -14,6 +12,12 @@ public class ThirdPersonShooterController : MonoBehaviour
     [SerializeField] private LayerMask _aimColliderLayerMask = new LayerMask();
     [SerializeField] private Transform test;
     [SerializeField] private Animator _animator;
+    [SerializeField] private UIControllerView _uiControllerView;
+
+    private void Start()
+    {
+        _uiControllerView.ShootButton.onClick.AddListener(Shoot);
+    }
 
     private void Update()
     {
@@ -48,5 +52,10 @@ public class ThirdPersonShooterController : MonoBehaviour
             _animator.SetLayerWeight(1, Mathf.Lerp(_animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
         }
 
+    }
+
+    private void Shoot()
+    {
+        
     }
 }
