@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using StarterAssets;
 using UnityEngine;
@@ -27,12 +28,23 @@ public class ThirdPersonShooterController : MonoBehaviour
 
     private void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(_screenCenterPoint);
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, _aimColliderLayerMask))
+        FindMousePosition();
+        CheckAimMode();
+#if UNITY_EDITOR
+        if (_starterAssetsInputs.shoot)
         {
-            _mouseWorldPosition = raycastHit.point;
+            Shoot();
         }
+#endif
+    }
 
+    private void OnDestroy()
+    {
+        _uiControllerView.ShootButton.onClick.RemoveAllListeners();
+    }
+
+    private void CheckAimMode()
+    {
         if (_starterAssetsInputs.aim)
         {
             _aimVirtualCamera.gameObject.SetActive(true);
@@ -53,14 +65,17 @@ public class ThirdPersonShooterController : MonoBehaviour
             _thirdPersonController.SetRotateOnMove(true);
             _animator.SetLayerWeight(1, Mathf.Lerp(_animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
         }
-#if UNITY_EDITOR
-        if (_starterAssetsInputs.shoot)
-        {
-            Shoot();
-        }
-#endif
     }
-    
+
+    private void FindMousePosition()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(_screenCenterPoint);
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, _aimColliderLayerMask))
+        {
+            _mouseWorldPosition = raycastHit.point;
+        }
+    }
+
 
     private void Shoot()
     {
